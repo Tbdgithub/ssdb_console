@@ -1,4 +1,4 @@
-OBJS = Hello.o main.o strings.o  bytes.o Link.o link_redis.o SSDB_client.o SSDB_impl.o
+OBJS = Hello.o main.o strings.o  bytes.o link.o link_redis.o SSDB_client.o SSDB_impl.o
 
 main: $(OBJS)
 	g++  $(OBJS) -o ssdb-console  -std=c++11
@@ -17,7 +17,7 @@ strings.o: client/util/strings.h client/util/strings.cpp
 bytes.o: client/util/bytes.h client/util/bytes.cpp
 	g++ -c  client/util/bytes.cpp  -std=c++11
 
-Link.o: client/net/link.cpp  client/net/link.h
+link.o: client/net/link.cpp  client/net/link.h
 	g++ -c client/net/link.cpp   -std=c++11
 
 link_redis.o:client/net/link_redis.h client/net/link_redis.cpp
