@@ -4,7 +4,7 @@ main: $(OBJS)
 	g++  $(OBJS) -o ssdb-console  -std=c++11
 
 edit: $(OBJS)
-	g++ -o edit $(OBJS)
+	g++ -o edit $(OBJS) -std=c++11
 
 Hello.o:   tool/Hello.cpp
 	g++ -c tool/Hello.cpp -std=c++11
