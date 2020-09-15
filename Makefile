@@ -1,7 +1,7 @@
 OBJS = Hello.o main.o
 
 main: $(OBJS)
-	g++  $(OBJS) -o ssdb-console -lstdc++
+	g++  $(OBJS) -o ssdb-console -lstdc++ -std=c++14
 
 edit: $(OBJS)
 	g++ -o edit $(OBJS)
