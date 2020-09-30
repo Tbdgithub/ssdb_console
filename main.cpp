@@ -264,37 +264,3 @@ void printVector(vector<string> *ptr) {
     cout << endl;
 }
 
-//
-//        string cmd;
-//        string param0;
-//        while (pch != NULL) {
-//
-//            paramList.push_back(pch);
-//            ++word_count;
-//            pch = strtok(NULL, " \t\n");
-//        }
-//
-//        if (paramList.size() > 0) {
-//            cmd = paramList[0];
-//        }
-
-// string cmdline = str(line);
-
-//cmdline=clientHelper.trim_line(cmdline);
-
-
-//        char *pch = strtok(line, "\t \n");
-//        int word_count = 0;
-
-
-//                string::size_type loc1 = start_temp.find("\"", 0);
-//
-//                if (loc1 != string::npos) {
-//                    start = start_temp.substr(1, start_temp.size() - 2);
-//                }
-//
-//                string::size_type loc2 = end_temp.find("\"", 0);
-//
-//                if (loc2 != string::npos) {
-//                    end = end_temp.substr(1, end_temp.size() - 2);
-//                }
