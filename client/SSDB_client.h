@@ -101,6 +101,8 @@ namespace ssdb{
         /// @{
         virtual Status get(const std::string &key, std::string *val) = 0;
         virtual Status set(const std::string &key, const std::string &val) = 0;
+
+        virtual Status ncmset(const std::string &key, const std::string &key1 ,const std::string &key2,const std::string &val) = 0;
         /**
          * Set the value of the key, with a time to live.
          */
@@ -127,7 +129,7 @@ namespace ssdb{
         virtual Status nscan(const std::string &key,  int64_t start, int64_t end ,uint64_t offset,
                             uint64_t limit, std::vector<std::string> *ret) = 0;
 
-        virtual Status ncmget(const std::string &key,  uint64_t numbger,   std::vector<std::string> *ret) = 0;
+        virtual Status ncmget(const std::string &key, const std::string &key1, const std::string &key2,   std::vector<std::string> *ret) = 0;
 
         /**
          * Return key-value pairs.

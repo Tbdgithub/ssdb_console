@@ -270,12 +270,22 @@ namespace ssdb{
         return _read_list(resp, ret);
     }
 
-    Status ClientImpl::ncmget(const std::string &key, uint64_t number ,  std::vector<std::string> *ret)
+    Status ClientImpl::ncmget(const std::string &key, const std::string &key1  ,const std::string &key2  ,  std::vector<std::string> *ret)
     {
-        std::string s_number = str(number);
+
         const std::vector<std::string> *resp;
-        resp = this->request("ncmget", key, s_number);
+        resp = this->request("ncmget", key, key1,key2);
         return _read_list(resp, ret);
+    }
+
+    Status ClientImpl::ncmset(const std::string &key,  const std::string &key1   ,const std::string &key2 , const std::string &val)
+    {
+
+        const std::vector<std::string> *resp;
+        resp = this->request("ncmset", key, key1,key2,val);
+
+        Status s(resp);
+        return s;
     }
 
 

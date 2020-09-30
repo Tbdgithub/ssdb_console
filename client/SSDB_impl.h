@@ -49,7 +49,9 @@ namespace ssdb{
                             uint64_t limit, std::vector<std::string> *ret);
 
 
-        virtual Status ncmget(const std::string &key,  uint64_t number,   std::vector<std::string> *ret);
+        virtual Status ncmget(const std::string &key, const std::string &key1,  const std::string &key2,   std::vector<std::string> *ret);
+
+        virtual Status ncmset(const std::string &key,  const std::string &key1, const std::string &key2, const std::string &val);
 
         virtual Status rscan(const std::string &key_start, const std::string &key_end,
                              uint64_t limit, std::vector<std::string> *ret);

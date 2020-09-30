@@ -12,19 +12,33 @@ int getline2(char s[], int lim);
 
 void printVector(vector<string> *vec);
 
+void nextRound(const char *ip, int port);
+
+void nscan(ssdb::Client *client, const vector<std::string> &paramList);
+
+void ncmget(ssdb::Client *client, const vector<std::string> &paramList);
+
+void ncmset(ssdb::Client *client, const vector<std::string> &paramList);
+
+void nlist(ssdb::Client *client, const vector<std::string> &paramList);
+
+void set(ssdb::Client *client, const vector<std::string> &paramList, const string &val);
+
 int main(int argc, char **argv) {
-    std::ostringstream oss;
 
-    oss << "hi";
 
-    cout << oss.str() << endl;
-
-    oss.str("");
-    cout << "after " << oss.str() << endl;
-
-    oss << "second";
-
-    cout << "after 2 " << oss.str() << endl;
+//    std::ostringstream oss;
+//
+//    oss << "hi";
+//
+//    cout << oss.str() << endl;
+//
+//    oss.str("");
+//    cout << "after " << oss.str() << endl;
+//
+//    oss << "second";
+//
+//    cout << "after 2 " << oss.str() << endl;
     CmdLineParser clientHelper = CmdLineParser();
 
 
@@ -55,100 +69,196 @@ int main(int argc, char **argv) {
 
     while (1) {
 
-        string cmdline;
 
-        getline(cin, cmdline);
+        try {
+            string cmdline;
 
-        std::vector<std::string> paramList = *clientHelper.parse_cmd(cmdline);
+            getline(cin, cmdline);
 
-        printVector(&paramList);
-        string cmd = paramList[0];
+            std::vector<std::string> paramList = *clientHelper.parse_cmd(cmdline);
 
-        std::string val;
-
-        if ("get" == cmd) {
-            //check param size;
-            string param0 = paramList[1];
-            ssdb::Status s = client->get(param0, &val);
-            if (s.ok()) {
-                printf("%s\n", val.c_str());
-            } else if (s.not_found()) {
-                printf("%s\n", s.code().c_str());
+            if (paramList.size() == 0) {
+                printf("wrong number of arguments\n");
+                nextRound(ip, port);
+                continue;
             }
 
-        } else if ("set" == cmd) {
+            string cmd = paramList[0];
 
-
-            std::string key = paramList[1];
-            std::string value = paramList[2];
-
-            ssdb::Status s = client->set(key, value);
-            if (s.ok()) {
-                printf("%s\n", val.c_str());
-            } else if (s.not_found()) {
-                printf("%s\n", s.code().c_str());
+            if (cmd.empty()) {
+                printf("wrong number of arguments\n");
+                nextRound(ip, port);
+                continue;
             }
 
-        } else if ("nlist" == cmd) {
+            std::string val;
 
-            std::string start_temp = paramList[1];
-            std::string end_temp = paramList[2];
+            if ("get" == cmd) {
+                //check param size;
 
-            std::string start;
-            std::string end;
+                if (paramList.size() != 2) {
+                    printf("wrong number of arguments\n");
+                    nextRound(ip, port);
+                    continue;
+                }
 
-            string::size_type loc1 = start_temp.find("\"", 0);
+                string param0 = paramList[1];
+                ssdb::Status s = client->get(param0, &val);
+                if (s.ok()) {
+                    printf("%s\n", val.c_str());
+                } else if (s.not_found()) {
+                    printf("%s\n", s.code().c_str());
+                }
 
-            if (loc1 != string::npos) {
-                start = start_temp.substr(1, start_temp.size() - 2);
+            } else if ("set" == cmd) {
+
+                if (paramList.size() != 3) {
+                    printf("wrong number of arguments\n");
+                    nextRound(ip, port);
+                    continue;
+                }
+
+                set(client, paramList, val);
+
+            } else if ("nlist" == cmd) {
+                if (paramList.size() != 4) {
+                    printf("wrong number of arguments\n");
+                    nextRound(ip, port);
+                    continue;
+                }
+
+                nlist(client, paramList);
+
+            } else if ("nscan" == cmd) {
+                if (paramList.size() != 6) {
+                    printf("wrong number of arguments\n");
+                    nextRound(ip, port);
+                    continue;
+                }
+
+                nscan(client, paramList);
+
+            } else if ("ncmget" == cmd) {
+                if (paramList.size() != 4) {
+                    printf("wrong number of arguments\n");
+                    nextRound(ip, port);
+                    continue;
+                }
+
+                ncmget(client, paramList);
+
+            } else if ("ncmset" == cmd) {
+                if (paramList.size() != 5) {
+                    printf("wrong number of arguments\n");
+                    nextRound(ip, port);
+                    continue;
+                }
+
+                ncmset(client, paramList);
+
+            } else if ("quit" == cmd) {
+                delete client;
+                printf("bye.\n");
+                return 0;
+
+            } else if (cmd.length() == 0) {
+                //printf("ctrl +d");
+
+                printf("\n");
+                return 0;
+            } else {
+                printf("client_error: Unknown Command: %s\n", cmd.c_str());
             }
 
-            string::size_type loc2 = end_temp.find("\"", 0);
+            nextRound(ip, port);
 
-            if (loc2 != string::npos) {
-                end = end_temp.substr(1, end_temp.size() - 2);
-            }
-
-            int limit = atoi(paramList[3].c_str());
-
-            std::vector<std::string> list;
-
-            ssdb::Status s = client->nlist(start, end, limit, &list);
-            //ssdb::Status s = client->nlist("","", limit, &list);
-
-
-            if (s.ok()) {
-
-
-                // printf("%s\n", val.c_str());
-
-
-                printVector(&list);
-            } else if (s.not_found()) {
-                printf("%s\n", s.code().c_str());
-            }
-
-        } else if ("quit" == cmd) {
-            delete client;
-            printf("bye.\n");
-            return 0;
-
-        } else if (cmd.length() == 0) {
-            //printf("ctrl +d");
-
-            printf("\n");
-            return 0;
-        } else {
-            printf("client_error: Unknown Command: %s\n", cmd.c_str());
         }
-
-        printf("(%4.3f sec)\n", 0.015);
-        printf("ssdb %s:%d>", ip, port);
-
+        catch (std::exception oor) {
+            cout << "has error" << oor.what() << endl;
+            nextRound(ip, port);
+        }
     }
 
-
     return 0;
+}
+
+void set(ssdb::Client *client, const vector<std::string> &paramList, const string &val) {
+    string key = paramList[1];
+    string value = paramList[2];
+
+    ssdb::Status s = client->set(key, value);
+    if (s.ok()) {
+        printf("%s\n", val.c_str());
+    } else if (s.not_found()) {
+        printf("%s\n", s.code().c_str());
+    }
+}
+
+void nlist(ssdb::Client *client, const vector<std::string> &paramList) {
+    string start = paramList[1];
+    string end = paramList[2];
+    int limit = atoi(paramList[3].c_str());
+    vector<string> list;
+    ssdb::Status s = client->nlist(start, end, limit, &list);
+
+    if (s.ok()) {
+        printVector(&list);
+    } else if (s.not_found()) {
+        printf("%s\n", s.code().c_str());
+    }
+}
+
+void ncmset(ssdb::Client *client, const vector<std::string> &paramList) {
+    string key = paramList[1];
+    string key1 = paramList[2];
+    string key2 = paramList[3];
+    string value = paramList[4];
+    vector<string> list;
+    ssdb::Status s = client->ncmset(key, key1, key2, value);
+
+    if (s.ok()) {
+        printVector(&list);
+    } else if (s.not_found()) {
+        printf("%s\n", s.code().c_str());
+    }
+}
+
+void ncmget(ssdb::Client *client, const vector<std::string> &paramList) {
+    string key = paramList[1];
+    string key1 = paramList[2];
+    string key2 = paramList[3];
+    vector<string> list;
+    ssdb::Status s = client->ncmget(key, key1, key2, &list);
+
+    if (s.ok()) {
+        printVector(&list);
+    } else if (s.not_found()) {
+        printf("%s\n", s.code().c_str());
+    }
+}
+
+void nscan(ssdb::Client *client, const vector<std::string> &paramList) {
+    string key = paramList[1];
+    long fromTime = atol(paramList[2].c_str());
+    long toTime = atol(paramList[3].c_str());
+    long offset = atol(paramList[4].c_str());
+    long limit = atol(paramList[5].c_str());
+    vector<string> list;
+
+    ssdb::Status s = client->nscan(key, fromTime, toTime, offset, limit, &list);
+
+    if (s.ok()) {
+        printVector(&list);
+    } else if (s.not_found()) {
+        printf("%s\n", s.code().c_str());
+    }
+}
+
+void nextRound(const char *ip, int port) {
+    printf("(%4.3f sec)\n", 0.015);
+    printf("ssdb %s:%d>", ip, port);
+
+
 }
 
 
@@ -200,3 +310,16 @@ void printVector(vector<string> *ptr) {
 
 //        char *pch = strtok(line, "\t \n");
 //        int word_count = 0;
+
+
+//                string::size_type loc1 = start_temp.find("\"", 0);
+//
+//                if (loc1 != string::npos) {
+//                    start = start_temp.substr(1, start_temp.size() - 2);
+//                }
+//
+//                string::size_type loc2 = end_temp.find("\"", 0);
+//
+//                if (loc2 != string::npos) {
+//                    end = end_temp.substr(1, end_temp.size() - 2);
+//                }
