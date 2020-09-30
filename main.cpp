@@ -26,30 +26,13 @@ void set(ssdb::Client *client, const vector<std::string> &paramList, const strin
 
 int main(int argc, char **argv) {
 
-
-//    std::ostringstream oss;
-//
-//    oss << "hi";
-//
-//    cout << oss.str() << endl;
-//
-//    oss.str("");
-//    cout << "after " << oss.str() << endl;
-//
-//    oss << "second";
-//
-//    cout << "after 2 " << oss.str() << endl;
     CmdLineParser clientHelper = CmdLineParser();
-
-
-    std::cout << "Hello, World ,good to see u!" << std::endl;
 
     printf("Usage: %s [host] [port]\n", argv[0]);
     const char *ip = (argc >= 2) ? argv[1] : "127.0.0.1";
     int port = (argc >= 3) ? atoi(argv[2]) : 8888;
 
     printf("host:%s,port:%d\n", ip, port);
-
 
     // connect to server
     ssdb::Client *client = ssdb::Client::connect(ip, port);
@@ -63,9 +46,6 @@ int main(int argc, char **argv) {
     printf("connected host:%s,port:%d\n", ip, port);
 
     printf("ssdb %s:%d>", ip, port);
-
-    const int maxlen = 1000l;
-    char line[maxlen];
 
     while (1) {
 
@@ -161,12 +141,7 @@ int main(int argc, char **argv) {
                 printf("bye.\n");
                 return 0;
 
-            } else if (cmd.length() == 0) {
-                //printf("ctrl +d");
-
-                printf("\n");
-                return 0;
-            } else {
+            }  else {
                 printf("client_error: Unknown Command: %s\n", cmd.c_str());
             }
 

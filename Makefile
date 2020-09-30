@@ -1,33 +1,32 @@
-OBJS = Hello.o main.o strings.o  bytes.o link.o link_redis.o SSDB_client.o SSDB_impl.o
+sources := $(wildcard client/net/*.cpp  client/util/*.cpp client/*.cpp main.cpp)
+objects := $(sources:%.cpp=%.o)
+#objects1 := $(notdir $(objects))
 
-main: $(OBJS)
-	g++  $(OBJS) -o ssdb-console  -std=c++11
+#objects2 := $(addprefix ./obj/,$(objects1))
 
-edit: $(OBJS)
-	g++ -o edit $(OBJS) -std=c++11
+target_dir :=./target/
 
-Hello.o:   tool/Hello.cpp
-	g++ -c tool/Hello.cpp -std=c++11
+CC=g++
+FLAGS= -Wall
 
-main.o:   main.cpp
-	g++ -c main.cpp -std=c++11
+first : before ssdb-console
+#	echo objects $(objects)
+#	echo sources $(sources)
+#	echo 'target:' $@
 
-strings.o: client/util/strings.h client/util/strings.cpp
-	g++ -c  client/util/strings.cpp  -std=c++11
-bytes.o: client/util/bytes.h client/util/bytes.cpp
-	g++ -c  client/util/bytes.cpp  -std=c++11
 
-link.o: client/net/link.cpp  client/net/link.h
-	g++ -c client/net/link.cpp   -std=c++11
+before :
+	mkdir -p target
+	echo $(target_dir)ssdb-console
 
-link_redis.o:client/net/link_redis.h client/net/link_redis.cpp
-	g++ -c  client/net/link_redis.cpp  -std=c++11
 
-SSDB_client.o:client/SSDB_client.h client/SSDB_client.cpp
-	g++ -c client/SSDB_client.cpp -o SSDB_client.o -std=c++11
+ssdb-console : $(objects)
+	$(CC) $(FLAGS) -o $@ $^
+#	echo $(target_dir)ssdb-console
+	rm $(objects)
+	mv ssdb-console $(target_dir)
 
-SSDB_impl.o:client/SSDB_impl.h client/SSDB_impl.cpp
-	g++ -c  client/SSDB_impl.cpp  -std=c++11
+.PHONY : clean
 
-clean:
-	rm -rf *.o ssdb-console
+clean :
+	rm $(target_dir)ssdb-console $(objects)
