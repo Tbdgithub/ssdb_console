@@ -114,7 +114,7 @@ fabric.properties
 *.out
 *.app
 
-
+target/
 # CMake ================================
 bin/
 build/
