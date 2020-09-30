@@ -1,9 +1,10 @@
-OBJS = Hello.o main.o strings.o  bytes.o link.o link_redis.o SSDB_client.o SSDB_impl.o
+OBJS = Hello.o main.o strings.o  bytes.o link.o link_redis.o SSDB_client.o SSDB_impl.o	CmdLineParser.o
 
 main: $(OBJS)
 	g++  $(OBJS) -o ssdb-console  -std=c++11
 
 edit: $(OBJS)
+	echo $(OBJS)
 	g++ -o edit $(OBJS) -std=c++11
 
 Hello.o:   tool/Hello.cpp
@@ -28,6 +29,9 @@ SSDB_client.o:client/SSDB_client.h client/SSDB_client.cpp
 
 SSDB_impl.o:client/SSDB_impl.h client/SSDB_impl.cpp
 	g++ -c  client/SSDB_impl.cpp  -std=c++11
+
+CmdLineParser.o:client/util/CmdLineParser.cpp client/util/CmdLineParser.h
+	g++ -c  client/util/CmdLineParser.cpp -o CmdLineParser.o  -std=c++11
 
 clean:
 	rm -rf *.o ssdb-console
