@@ -1,14 +1,33 @@
 #include <iostream>
 #include <vector>
+#include <sstream>
 #include "client/SSDB_impl.h"
-
+#include "client/util/CmdLineParser.h"
+#include "string.h"
 
 using namespace std;
 
 
 int getline2(char s[], int lim);
 
+void printVector(vector<string> *vec);
+
 int main(int argc, char **argv) {
+    std::ostringstream oss;
+
+    oss << "hi";
+
+    cout << oss.str() << endl;
+
+    oss.str("");
+    cout << "after " << oss.str() << endl;
+
+    oss << "second";
+
+    cout << "after 2 " << oss.str() << endl;
+    CmdLineParser clientHelper = CmdLineParser();
+
+
     std::cout << "Hello, World ,good to see u!" << std::endl;
 
     printf("Usage: %s [host] [port]\n", argv[0]);
@@ -36,59 +55,78 @@ int main(int argc, char **argv) {
 
     while (1) {
 
+        string cmdline;
 
-        int len = getline2(line, maxlen);
+        getline(cin, cmdline);
 
+        std::vector<std::string> paramList = *clientHelper.parse_cmd(cmdline);
 
-        char *pch = strtok(line, "\t \n");
-        int word_count = 0;
-        std::vector<std::string> list;
+        printVector(&paramList);
+        string cmd = paramList[0];
 
-        string cmd;
-        string param0;
-        while (pch != NULL) {
-            // printf("%s\n", pch);
-
-            if (word_count == 0) {
-
-                //  string temp = pch;
-
-                cmd = pch;
-                // cout << "temp:" << cmd << endl;
-            }
-
-            if (word_count == 1) {
-                param0 = pch;
-            }
-
-            string temp(line);
-            list.push_back(temp);
-            ++word_count;
-            pch = strtok(NULL, " \t\n");
-        }
-        // printf("other\n");
-        //printf(cmd.c_str());
-        // cout<<"cmd is:"<<cmd<<endl;
-
-        //printf("cmd is %s",cmd.c_str());
-        // printf("cmd is:%s \n", cmd.c_str() );
-        // printf("param0 is:%s \n", param0.c_str() );
-
-
-//        std::string key = "key";
         std::string val;
 
         if ("get" == cmd) {
+            //check param size;
+            string param0 = paramList[1];
             ssdb::Status s = client->get(param0, &val);
-            //assert(s.ok() && (val == "val"));
-            //printf("%s = %s\n", cmd.c_str(), val.c_str());
-
             if (s.ok()) {
                 printf("%s\n", val.c_str());
             } else if (s.not_found()) {
                 printf("%s\n", s.code().c_str());
             }
 
+        } else if ("set" == cmd) {
+
+
+            std::string key = paramList[1];
+            std::string value = paramList[2];
+
+            ssdb::Status s = client->set(key, value);
+            if (s.ok()) {
+                printf("%s\n", val.c_str());
+            } else if (s.not_found()) {
+                printf("%s\n", s.code().c_str());
+            }
+
+        } else if ("nlist" == cmd) {
+
+            std::string start_temp = paramList[1];
+            std::string end_temp = paramList[2];
+
+            std::string start;
+            std::string end;
+
+            string::size_type loc1 = start_temp.find("\"", 0);
+
+            if (loc1 != string::npos) {
+                start = start_temp.substr(1, start_temp.size() - 2);
+            }
+
+            string::size_type loc2 = end_temp.find("\"", 0);
+
+            if (loc2 != string::npos) {
+                end = end_temp.substr(1, end_temp.size() - 2);
+            }
+
+            int limit = atoi(paramList[3].c_str());
+
+            std::vector<std::string> list;
+
+            ssdb::Status s = client->nlist(start, end, limit, &list);
+            //ssdb::Status s = client->nlist("","", limit, &list);
+
+
+            if (s.ok()) {
+
+
+                // printf("%s\n", val.c_str());
+
+
+                printVector(&list);
+            } else if (s.not_found()) {
+                printf("%s\n", s.code().c_str());
+            }
 
         } else if ("quit" == cmd) {
             delete client;
@@ -128,3 +166,37 @@ int getline2(char s[], int lim) {
     s[i] = '\0';
     return i;
 }
+
+void printVector(vector<string> *ptr) {
+
+    vector<string> obj = *ptr;
+
+    cout << "size=" << obj.size() << endl;
+    for (int i = 0; i < obj.size(); i++)//size()容器中实际数据个数
+    {
+        cout << "len=" << obj[i].length() << " val=" << obj[i] << " ";
+    }
+    cout << endl;
+}
+
+//
+//        string cmd;
+//        string param0;
+//        while (pch != NULL) {
+//
+//            paramList.push_back(pch);
+//            ++word_count;
+//            pch = strtok(NULL, " \t\n");
+//        }
+//
+//        if (paramList.size() > 0) {
+//            cmd = paramList[0];
+//        }
+
+// string cmdline = str(line);
+
+//cmdline=clientHelper.trim_line(cmdline);
+
+
+//        char *pch = strtok(line, "\t \n");
+//        int word_count = 0;

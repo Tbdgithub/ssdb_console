@@ -10,4 +10,4 @@ add_executable(ssdb_console main.cpp tool/Hello.cpp client/util/strings.h client
         client/SSDB_client.cpp
         client/SSDB_impl.h
         client/SSDB_impl.cpp
-        )
+        client/util/CmdLineParser.cpp client/util/CmdLineParser.h)
